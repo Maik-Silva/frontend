@@ -157,7 +157,7 @@ export default function Home() {
 
 const styles = {
   container: { 
-    textAlign: "center" as "center", // Corrigir aqui, adicionando a tipagem explícita
+    textAlign: "center" as const, // Corrigir a tipagem para as const
     padding: "20px", 
     fontFamily: "Poppins, sans-serif" 
   },
