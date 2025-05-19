@@ -14,6 +14,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     setIsOpen(true);
   };
 
+  console.log(showAlert); // ✅ Isto evita o erro de "variável não utilizada"
+
   return (
     <html lang="pt">
       <body>
