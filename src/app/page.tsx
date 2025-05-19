@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, CSSProperties } from "react";
 
 export default function Home() {
   const [baseFood, setBaseFood] = useState<string>("");
@@ -16,7 +16,6 @@ export default function Home() {
   const baseFoodSelected = useRef<boolean>(false);
   const substituteFoodSelected = useRef<boolean>(false);
 
-  // Tipos explicitos para os parâmetros da função
   const fetchSuggestions = async (
     query: string,
     setSuggestions: React.Dispatch<React.SetStateAction<string[]>>,
@@ -24,7 +23,7 @@ export default function Home() {
   ) => {
     if (!query.trim() || foodSelected.current) {
       setSuggestions([]);
-      foodSelected.current = false; // Reseta após uma seleção
+      foodSelected.current = false;
       return;
     }
 
@@ -53,7 +52,7 @@ export default function Home() {
   ) => {
     setFood(food);
     setSuggestions([]);
-    foodSelected.current = true; // Impede a reativação da busca imediatamente
+    foodSelected.current = true;
   };
 
   const calculateEquivalence = async () => {
@@ -107,7 +106,11 @@ export default function Home() {
         {baseSuggestions.length > 0 && (
           <ul style={styles.suggestionsList}>
             {baseSuggestions.map((food, index) => (
-              <li key={index} onClick={() => handleSelectSuggestion(food, setBaseFood, setBaseSuggestions, baseFoodSelected)} style={styles.suggestionItem}>
+              <li
+                key={index}
+                onClick={() => handleSelectSuggestion(food, setBaseFood, setBaseSuggestions, baseFoodSelected)}
+                style={styles.suggestionItem}
+              >
                 {food}
               </li>
             ))}
@@ -132,7 +135,11 @@ export default function Home() {
         {substituteSuggestions.length > 0 && (
           <ul style={styles.suggestionsList}>
             {substituteSuggestions.map((food, index) => (
-              <li key={index} onClick={() => handleSelectSuggestion(food, setSubstituteFood, setSubstituteSuggestions, substituteFoodSelected)} style={styles.suggestionItem}>
+              <li
+                key={index}
+                onClick={() => handleSelectSuggestion(food, setSubstituteFood, setSubstituteSuggestions, substituteFoodSelected)}
+                style={styles.suggestionItem}
+              >
                 {food}
               </li>
             ))}
@@ -142,9 +149,9 @@ export default function Home() {
 
       <button onClick={calculateEquivalence} style={styles.button} disabled={loading}>
         {loading ? "Calculando..." : "Calcular Substituição"}
-      </button> 
-      
-      {showResult && ( 
+      </button>
+
+      {showResult && (
         <div className="centralizado">
           {equivalence && <p style={styles.result}>{equivalence}</p>}
           {error && <p style={styles.error}>{error}</p>}
@@ -155,19 +162,70 @@ export default function Home() {
   );
 }
 
-const styles = {
-  container: { 
-    textAlign: "center" as const, 
-    padding: "20px", 
-    fontFamily: "Poppins, sans-serif" 
+// ✅ Corrigido com tipagem explícita:
+const styles: { [key: string]: CSSProperties } = {
+  container: {
+    textAlign: "center",
+    padding: "20px",
+    fontFamily: "Poppins, sans-serif",
   },
   title: { marginBottom: "20px", color: "#04451c" },
-  inputContainer: { marginBottom: "20px", position: "relative" as const },  // Corrigido para "relative" as const
-  input: { padding: "12px", borderRadius: "15px", border: "2px solid #094e22", width: "80%", fontSize: "16px", marginBottom: "10px", outline: "none" },
-  suggestionsList: { listStyle: "none", padding: 0, margin: 0, background: "#fff", border: "1px solid #ccc", borderRadius: "5px", position: "absolute", width: "80%", maxHeight: "150px", overflowY: "auto", zIndex: 10 },
-  suggestionItem: { padding: "10px", cursor: "pointer", borderBottom: "1px solid #ddd" },
-  button: { backgroundColor: "#04451c", color: "white", border: "none", padding: "12px 20px", borderRadius: "25px", cursor: "pointer", fontSize: "16px", transition: "0.3s" },
-  error: { color: "red", fontSize: "16px", marginTop: "15px" },
-  warning: { color: "red", fontSize: "16px", marginTop: "15px", fontWeight: "bold" },
-  result: { marginTop: "20px", fontSize: "18px", fontWeight: "bold", color: "#023013" },
+  inputContainer: {
+    marginBottom: "20px",
+    position: "relative",
+  },
+  input: {
+    padding: "12px",
+    borderRadius: "15px",
+    border: "2px solid #094e22",
+    width: "80%",
+    fontSize: "16px",
+    marginBottom: "10px",
+    outline: "none",
+  },
+  suggestionsList: {
+    listStyle: "none",
+    padding: 0,
+    margin: 0,
+    background: "#fff",
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+    position: "absolute",
+    width: "80%",
+    maxHeight: "150px",
+    overflowY: "auto",
+    zIndex: 10,
+  },
+  suggestionItem: {
+    padding: "10px",
+    cursor: "pointer",
+    borderBottom: "1px solid #ddd",
+  },
+  button: {
+    backgroundColor: "#04451c",
+    color: "white",
+    border: "none",
+    padding: "12px 20px",
+    borderRadius: "25px",
+    cursor: "pointer",
+    fontSize: "16px",
+    transition: "0.3s",
+  },
+  error: {
+    color: "red",
+    fontSize: "16px",
+    marginTop: "15px",
+  },
+  warning: {
+    color: "red",
+    fontSize: "16px",
+    marginTop: "15px",
+    fontWeight: "bold",
+  },
+  result: {
+    marginTop: "20px",
+    fontSize: "18px",
+    fontWeight: "bold",
+    color: "#023013",
+  },
 };
