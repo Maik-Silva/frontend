@@ -156,7 +156,11 @@ export default function Home() {
 }
 
 const styles = {
-  container: { textAlign: "center", padding: "20px", fontFamily: "Poppins, sans-serif" },
+  container: { 
+    textAlign: "center" as "center", // Corrigir aqui, adicionando a tipagem explícita
+    padding: "20px", 
+    fontFamily: "Poppins, sans-serif" 
+  },
   title: { marginBottom: "20px", color: "#04451c" },
   inputContainer: { marginBottom: "20px", position: "relative" },
   input: { padding: "12px", borderRadius: "15px", border: "2px solid #094e22", width: "80%", fontSize: "16px", marginBottom: "10px", outline: "none" },
