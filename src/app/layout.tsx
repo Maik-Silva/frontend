@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
 
