@@ -157,12 +157,12 @@ export default function Home() {
 
 const styles = {
   container: { 
-    textAlign: "center" as const, // Corrigir a tipagem para as const
+    textAlign: "center" as const, 
     padding: "20px", 
     fontFamily: "Poppins, sans-serif" 
   },
   title: { marginBottom: "20px", color: "#04451c" },
-  inputContainer: { marginBottom: "20px", position: "relative" },
+  inputContainer: { marginBottom: "20px", position: "relative" as const },  // Corrigido para "relative" as const
   input: { padding: "12px", borderRadius: "15px", border: "2px solid #094e22", width: "80%", fontSize: "16px", marginBottom: "10px", outline: "none" },
   suggestionsList: { listStyle: "none", padding: 0, margin: 0, background: "#fff", border: "1px solid #ccc", borderRadius: "5px", position: "absolute", width: "80%", maxHeight: "150px", overflowY: "auto", zIndex: 10 },
   suggestionItem: { padding: "10px", cursor: "pointer", borderBottom: "1px solid #ddd" },
