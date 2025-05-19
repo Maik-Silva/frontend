@@ -2,21 +2,26 @@
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
-  const [baseFood, setBaseFood] = useState("");
-  const [baseSuggestions, setBaseSuggestions] = useState([]);
-  const [baseQuantity, setBaseQuantity] = useState("");
-  const [substituteFood, setSubstituteFood] = useState("");
-  const [substituteSuggestions, setSubstituteSuggestions] = useState([]);
-  const [equivalence, setEquivalence] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [warning, setWarning] = useState(null);
-  const [showResult, setShowResult] = useState(false);
+  const [baseFood, setBaseFood] = useState<string>("");
+  const [baseSuggestions, setBaseSuggestions] = useState<string[]>([]);
+  const [baseQuantity, setBaseQuantity] = useState<string>("");
+  const [substituteFood, setSubstituteFood] = useState<string>("");
+  const [substituteSuggestions, setSubstituteSuggestions] = useState<string[]>([]);
+  const [equivalence, setEquivalence] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
+  const [showResult, setShowResult] = useState<boolean>(false);
 
-  const baseFoodSelected = useRef(false);
-  const substituteFoodSelected = useRef(false);
+  const baseFoodSelected = useRef<boolean>(false);
+  const substituteFoodSelected = useRef<boolean>(false);
 
-  const fetchSuggestions = async (query, setSuggestions, foodSelected) => {
+  // Tipos explicitos para os parâmetros da função
+  const fetchSuggestions = async (
+    query: string,
+    setSuggestions: React.Dispatch<React.SetStateAction<string[]>>,
+    foodSelected: React.RefObject<boolean>
+  ) => {
     if (!query.trim() || foodSelected.current) {
       setSuggestions([]);
       foodSelected.current = false; // Reseta após uma seleção
@@ -40,7 +45,12 @@ export default function Home() {
     fetchSuggestions(substituteFood, setSubstituteSuggestions, substituteFoodSelected);
   }, [substituteFood]);
 
-  const handleSelectSuggestion = (food, setFood, setSuggestions, foodSelected) => {
+  const handleSelectSuggestion = (
+    food: string,
+    setFood: React.Dispatch<React.SetStateAction<string>>,
+    setSuggestions: React.Dispatch<React.SetStateAction<string[]>>,
+    foodSelected: React.RefObject<boolean>
+  ) => {
     setFood(food);
     setSuggestions([]);
     foodSelected.current = true; // Impede a reativação da busca imediatamente
@@ -135,7 +145,7 @@ export default function Home() {
       </button> 
       
       {showResult && ( 
-        <div className='centralizado'>
+        <div className="centralizado">
           {equivalence && <p style={styles.result}>{equivalence}</p>}
           {error && <p style={styles.error}>{error}</p>}
           {warning && <p style={styles.warning}>{warning}</p>}
