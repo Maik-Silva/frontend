@@ -1,0 +1,5 @@
+/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+  Access-Control-Allow-Headers: Content-Type, Authorization
+  Content-Security-Policy: default-src 'self' https://backend-production-e77b.up.railway.app;
