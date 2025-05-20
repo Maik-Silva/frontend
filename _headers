@@ -2,7 +2,11 @@
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
   Access-Control-Allow-Headers: Content-Type, Authorization
-  Content-Security-Policy: default-src 'self'; connect-src 'self' https://backend-production-e77b.up.railway.app; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';
+  Content-Security-Policy: 
+    default-src 'self';
+    connect-src 'self' https://backend-production-e77b.up.railway.app;
+    script-src 'self' 'unsafe-inline';
+    style-src 'self' 'unsafe-inline';
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
