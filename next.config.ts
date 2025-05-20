@@ -3,17 +3,22 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/(.*)",
+        source: "/:path*",
         headers: [
           {
             key: "Content-Security-Policy",
-            value: `
-              default-src 'self' https://www.gstatic.com;
-              script-src 'self' 'unsafe-inline' 'unsafe-eval';
-              connect-src 'self' http://localhost:5000;
-              style-src 'self' 'unsafe-inline' https://www.gstatic.com;
-              img-src 'self' data:;
-            `.replace(/\s{2,}/g, " "), // Remove espaços extras
+            value: [
+              "default-src 'self' https://www.gstatic.com;",
+              "script-src 'self';", // Permite scripts só do seu domínio, bloqueia inline e eval
+              "connect-src 'self' http://localhost:5000;", // Seu backend local
+              "style-src 'self' https://www.gstatic.com;", // Só styles externos confiáveis, sem inline
+              "img-src 'self' data:;", // Imagens locais e base64
+              "font-src 'self';",
+              "frame-src 'none';",
+              "object-src 'none';",
+              "base-uri 'self';",
+              "form-action 'self';",
+            ].join(" "),
           },
         ],
       },
