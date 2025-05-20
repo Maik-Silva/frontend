@@ -1,23 +1,17 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   async headers() {
     return [
       {
-        source: "/:path*",
+        source: "/(.*)",
         headers: [
           {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self' https://www.gstatic.com;",
-              "script-src 'self';", // Permite scripts só do seu domínio, bloqueia inline e eval
-              "connect-src 'self' http://localhost:5000;", // Seu backend local
-              "style-src 'self' https://www.gstatic.com;", // Só styles externos confiáveis, sem inline
-              "img-src 'self' data:;", // Imagens locais e base64
-              "font-src 'self';",
-              "frame-src 'none';",
-              "object-src 'none';",
-              "base-uri 'self';",
-              "form-action 'self';",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval';",
+              "style-src 'self' 'unsafe-inline' https://www.gstatic.com;",
+              "connect-src 'self' http://localhost:5000 https://your-production-backend.com;",
+              "img-src 'self' data:;"
             ].join(" "),
           },
         ],
@@ -26,5 +20,4 @@ const nextConfig = {
   },
   reactStrictMode: true,
 };
-
 module.exports = nextConfig;
