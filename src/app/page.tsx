@@ -59,11 +59,14 @@ export default function Home() {
     setFood(food);
     setSuggestions([]);
     foodSelected.current = true;
+    setError(null);
+    setWarning(null);
+    setShowResult(false);
   };
 
   const calculateEquivalence = async () => {
-    if (!baseFood || !baseQuantity || !substituteFood) {
-      setError("Preencha todos os campos!");
+    if (!baseFood || !baseQuantity || !substituteFood || Number(baseQuantity) <= 0) {
+      setError("Preencha todos os campos corretamente!");
       setShowResult(false);
       return;
     }
@@ -76,7 +79,9 @@ export default function Home() {
     try {
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
       const response = await fetch(
-        `${backendUrl}/api/equivalencia?baseFood=${encodeURIComponent(baseFood)}&baseQuantity=${encodeURIComponent(baseQuantity)}&substituteFood=${encodeURIComponent(substituteFood)}`
+        `${backendUrl}/api/equivalencia?baseFood=${encodeURIComponent(
+          baseFood
+        )}&baseQuantity=${encodeURIComponent(baseQuantity)}&substituteFood=${encodeURIComponent(substituteFood)}`
       );
 
       if (!response.ok) {
@@ -112,7 +117,12 @@ export default function Home() {
           type="text"
           placeholder="Digite o alimento base"
           value={baseFood}
-          onChange={(e) => setBaseFood(e.target.value)}
+          onChange={(e) => {
+            setBaseFood(e.target.value);
+            setError(null);
+            setWarning(null);
+            setShowResult(false);
+          }}
           style={styles.input}
         />
         {baseSuggestions.length > 0 && (
@@ -132,8 +142,14 @@ export default function Home() {
         <input
           type="number"
           placeholder="Quantidade em gramas"
+          min="1"
           value={baseQuantity}
-          onChange={(e) => setBaseQuantity(e.target.value)}
+          onChange={(e) => {
+            setBaseQuantity(e.target.value);
+            setError(null);
+            setWarning(null);
+            setShowResult(false);
+          }}
           style={styles.input}
         />
 
@@ -141,7 +157,12 @@ export default function Home() {
           type="text"
           placeholder="Digite o alimento substituto"
           value={substituteFood}
-          onChange={(e) => setSubstituteFood(e.target.value)}
+          onChange={(e) => {
+            setSubstituteFood(e.target.value);
+            setError(null);
+            setWarning(null);
+            setShowResult(false);
+          }}
           style={styles.input}
         />
         {substituteSuggestions.length > 0 && (
@@ -161,7 +182,15 @@ export default function Home() {
         )}
       </div>
 
-      <button onClick={calculateEquivalence} style={styles.button} disabled={loading}>
+      <button
+        onClick={calculateEquivalence}
+        style={{ 
+          ...styles.button, 
+          opacity: loading ? 0.6 : 1, 
+          pointerEvents: loading ? "none" : "auto" 
+        }}
+        disabled={loading}
+      >
         {loading ? "Calculando..." : "Calcular Substituição"}
       </button>
 
