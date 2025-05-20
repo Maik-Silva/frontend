@@ -28,8 +28,13 @@ export default function Home() {
     }
 
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"; // Default para localhost em desenvolvimento
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
       const response = await fetch(`${backendUrl}/api/sugestoes?query=${encodeURIComponent(query)}`);
+
+      if (!response.ok) {
+        throw new Error(`Erro na resposta do servidor: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
       setSuggestions(data.sugestoes || []);
     } catch (err) {
@@ -69,10 +74,15 @@ export default function Home() {
     setShowResult(false);
 
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"; // Default para localhost em desenvolvimento
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
       const response = await fetch(
         `${backendUrl}/api/equivalencia?baseFood=${encodeURIComponent(baseFood)}&baseQuantity=${encodeURIComponent(baseQuantity)}&substituteFood=${encodeURIComponent(substituteFood)}`
       );
+
+      if (!response.ok) {
+        throw new Error(`Erro na resposta do servidor: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
 
       if (data.baseGroup && data.substituteGroup && data.baseGroup !== data.substituteGroup) {
@@ -139,7 +149,9 @@ export default function Home() {
             {substituteSuggestions.map((food, index) => (
               <li
                 key={index}
-                onClick={() => handleSelectSuggestion(food, setSubstituteFood, setSubstituteSuggestions, substituteFoodSelected)}
+                onClick={() =>
+                  handleSelectSuggestion(food, setSubstituteFood, setSubstituteSuggestions, substituteFoodSelected)
+                }
                 style={styles.suggestionItem}
               >
                 {food}
@@ -164,14 +176,12 @@ export default function Home() {
   );
 }
 
-// ✅ Corrigido com tipagem explícita:
 const styles: { [key: string]: CSSProperties } = {
   container: {
     textAlign: "center",
     padding: "20px",
     fontFamily: "Poppins, sans-serif",
   },
-  title: { marginBottom: "20px", color: "#04451c" },
   inputContainer: {
     marginBottom: "20px",
     position: "relative",
