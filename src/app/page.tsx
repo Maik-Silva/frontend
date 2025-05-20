@@ -28,7 +28,8 @@ export default function Home() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/sugestoes?query=${encodeURIComponent(query)}`);
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"; // Default para localhost em desenvolvimento
+      const response = await fetch(`${backendUrl}/api/sugestoes?query=${encodeURIComponent(query)}`);
       const data = await response.json();
       setSuggestions(data.sugestoes || []);
     } catch (err) {
@@ -68,8 +69,9 @@ export default function Home() {
     setShowResult(false);
 
     try {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"; // Default para localhost em desenvolvimento
       const response = await fetch(
-        `http://localhost:5000/api/equivalencia?baseFood=${encodeURIComponent(baseFood)}&baseQuantity=${encodeURIComponent(baseQuantity)}&substituteFood=${encodeURIComponent(substituteFood)}`
+        `${backendUrl}/api/equivalencia?baseFood=${encodeURIComponent(baseFood)}&baseQuantity=${encodeURIComponent(baseQuantity)}&substituteFood=${encodeURIComponent(substituteFood)}`
       );
       const data = await response.json();
 
