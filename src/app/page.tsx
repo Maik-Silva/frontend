@@ -1,25 +1,30 @@
 "use client";
-import { useState, useEffect, useRef, CSSProperties } from "react";
+import { useState, useEffect, useRef } from "react";
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function Home() {
-  const [baseFood, setBaseFood] = useState<string>("");
+  const [baseFood, setBaseFood] = useState("");
   const [baseSuggestions, setBaseSuggestions] = useState<string[]>([]);
-  const [baseQuantity, setBaseQuantity] = useState<string>("");
-  const [substituteFood, setSubstituteFood] = useState<string>("");
+  const [baseQuantity, setBaseQuantity] = useState("");
+  const [substituteFood, setSubstituteFood] = useState("");
   const [substituteSuggestions, setSubstituteSuggestions] = useState<string[]>([]);
   const [equivalence, setEquivalence] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
-  const [showResult, setShowResult] = useState<boolean>(false);
+  const [showResult, setShowResult] = useState(false);
 
-  const baseFoodSelected = useRef<boolean>(false);
-  const substituteFoodSelected = useRef<boolean>(false);
+  const [suggestionInput, setSuggestionInput] = useState("");
+  const [suggestionStatus, setSuggestionStatus] = useState("");
+
+  const baseFoodSelected = useRef(false);
+  const substituteFoodSelected = useRef(false);
 
   const fetchSuggestions = async (
     query: string,
-    setSuggestions: React.Dispatch<React.SetStateAction<string[]>>,
-    foodSelected: React.RefObject<boolean>
+    setSuggestions: (val: string[]) => void,
+    foodSelected: React.MutableRefObject<boolean>
   ) => {
     if (!query.trim() || foodSelected.current) {
       setSuggestions([]);
@@ -28,13 +33,9 @@ export default function Home() {
     }
 
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
-      const response = await fetch(`${backendUrl}/api/sugestoes?query=${encodeURIComponent(query)}`);
-
-      if (!response.ok) {
-        throw new Error(`Erro na resposta do servidor: ${response.status} ${response.statusText}`);
-      }
-
+      const response = await fetch(
+        `${BASE_URL}/api/sugestoes?query=${encodeURIComponent(query)}`
+      );
       const data = await response.json();
       setSuggestions(data.sugestoes || []);
     } catch (err) {
@@ -52,21 +53,18 @@ export default function Home() {
 
   const handleSelectSuggestion = (
     food: string,
-    setFood: React.Dispatch<React.SetStateAction<string>>,
-    setSuggestions: React.Dispatch<React.SetStateAction<string[]>>,
-    foodSelected: React.RefObject<boolean>
+    setFood: (v: string) => void,
+    setSuggestions: (v: string[]) => void,
+    foodSelected: React.MutableRefObject<boolean>
   ) => {
     setFood(food);
     setSuggestions([]);
     foodSelected.current = true;
-    setError(null);
-    setWarning(null);
-    setShowResult(false);
   };
 
   const calculateEquivalence = async () => {
-    if (!baseFood || !baseQuantity || !substituteFood || Number(baseQuantity) <= 0) {
-      setError("Preencha todos os campos corretamente!");
+    if (!baseFood || !baseQuantity || !substituteFood) {
+      setError("Preencha todos os campos!");
       setShowResult(false);
       return;
     }
@@ -77,29 +75,24 @@ export default function Home() {
     setShowResult(false);
 
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
       const response = await fetch(
-        `${backendUrl}/api/equivalencia?baseFood=${encodeURIComponent(
+        `${BASE_URL}/api/equivalencia?baseFood=${encodeURIComponent(
           baseFood
-        )}&baseQuantity=${encodeURIComponent(baseQuantity)}&substituteFood=${encodeURIComponent(substituteFood)}`
+        )}&baseQuantity=${encodeURIComponent(
+          baseQuantity
+        )}&substituteFood=${encodeURIComponent(substituteFood)}`
       );
-
-      if (!response.ok) {
-        throw new Error(`Erro na resposta do servidor: ${response.status} ${response.statusText}`);
-      }
-
       const data = await response.json();
 
       if (data.baseGroup && data.substituteGroup && data.baseGroup !== data.substituteGroup) {
         setWarning(
-          `⚠️ Essa troca pode não ser ideal. O alimento "${baseFood}" pertence ao grupo "${data.baseGroup}" e o alimento "${substituteFood}" pertence ao grupo "${data.substituteGroup}". \nTente trocar alimentos do mesmo grupo para manter as propriedades nutricionais dentro do seu plano alimentar.`
+          `⚠️ Essa troca pode não ser ideal. "${baseFood}" pertence a "${data.baseGroup}" e "${substituteFood}" pertence a "${data.substituteGroup}".`
         );
       }
 
       setEquivalence(
         `${data.baseQuantity}g de ${data.baseFood} equivale a ${data.equivalentQuantity}g de ${data.substituteFood}`
       );
-
       setShowResult(true);
     } catch (err) {
       setError("Erro ao calcular substituição.");
@@ -110,19 +103,44 @@ export default function Home() {
     setLoading(false);
   };
 
+  const enviarSugestao = async () => {
+    if (!suggestionInput.trim()) {
+      setSuggestionStatus("Digite um alimento para sugerir.");
+      return;
+    }
+
+    const url = `${BASE_URL}/api/sugestao`;
+    console.log("### URL usada para sugestão:", url);
+
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ alimento: suggestionInput }),
+      });
+
+      if (res.ok) {
+        setSuggestionStatus("✅ Sugestão enviada com sucesso!");
+        setSuggestionInput("");
+      } else {
+        setSuggestionStatus("❌ Erro ao enviar sugestão.");
+      }
+    } catch (error) {
+      console.error("Erro ao enviar sugestão:", error);
+      setSuggestionStatus("❌ Erro ao enviar sugestão.");
+    }
+  };
+
   return (
     <div style={styles.container}>
+      <h1 style={styles.title}>Calculadora de Substituição</h1>
+
       <div style={styles.inputContainer}>
         <input
           type="text"
           placeholder="Digite o alimento base"
           value={baseFood}
-          onChange={(e) => {
-            setBaseFood(e.target.value);
-            setError(null);
-            setWarning(null);
-            setShowResult(false);
-          }}
+          onChange={(e) => setBaseFood(e.target.value)}
           style={styles.input}
         />
         {baseSuggestions.length > 0 && (
@@ -130,7 +148,14 @@ export default function Home() {
             {baseSuggestions.map((food, index) => (
               <li
                 key={index}
-                onClick={() => handleSelectSuggestion(food, setBaseFood, setBaseSuggestions, baseFoodSelected)}
+                onClick={() =>
+                  handleSelectSuggestion(
+                    food,
+                    setBaseFood,
+                    setBaseSuggestions,
+                    baseFoodSelected
+                  )
+                }
                 style={styles.suggestionItem}
               >
                 {food}
@@ -142,14 +167,8 @@ export default function Home() {
         <input
           type="number"
           placeholder="Quantidade em gramas"
-          min="1"
           value={baseQuantity}
-          onChange={(e) => {
-            setBaseQuantity(e.target.value);
-            setError(null);
-            setWarning(null);
-            setShowResult(false);
-          }}
+          onChange={(e) => setBaseQuantity(e.target.value)}
           style={styles.input}
         />
 
@@ -157,12 +176,7 @@ export default function Home() {
           type="text"
           placeholder="Digite o alimento substituto"
           value={substituteFood}
-          onChange={(e) => {
-            setSubstituteFood(e.target.value);
-            setError(null);
-            setWarning(null);
-            setShowResult(false);
-          }}
+          onChange={(e) => setSubstituteFood(e.target.value)}
           style={styles.input}
         />
         {substituteSuggestions.length > 0 && (
@@ -171,7 +185,12 @@ export default function Home() {
               <li
                 key={index}
                 onClick={() =>
-                  handleSelectSuggestion(food, setSubstituteFood, setSubstituteSuggestions, substituteFoodSelected)
+                  handleSelectSuggestion(
+                    food,
+                    setSubstituteFood,
+                    setSubstituteSuggestions,
+                    substituteFoodSelected
+                  )
                 }
                 style={styles.suggestionItem}
               >
@@ -182,15 +201,7 @@ export default function Home() {
         )}
       </div>
 
-      <button
-        onClick={calculateEquivalence}
-        style={{ 
-          ...styles.button, 
-          opacity: loading ? 0.6 : 1, 
-          pointerEvents: loading ? "none" : "auto" 
-        }}
-        disabled={loading}
-      >
+      <button onClick={calculateEquivalence} style={styles.button} disabled={loading}>
         {loading ? "Calculando..." : "Calcular Substituição"}
       </button>
 
@@ -201,20 +212,31 @@ export default function Home() {
           {warning && <p style={styles.warning}>{warning}</p>}
         </div>
       )}
+
+      <hr style={{ margin: "30px 0" }} />
+
+      <div>
+        <h2 style={styles.title}>Sugerir novo alimento</h2>
+        <input
+          type="text"
+          placeholder="Digite sua sugestão"
+          value={suggestionInput}
+          onChange={(e) => setSuggestionInput(e.target.value)}
+          style={styles.input}
+        />
+        <button onClick={enviarSugestao} style={styles.button}>
+          Enviar Sugestão
+        </button>
+        {suggestionStatus && <p style={{ marginTop: 10 }}>{suggestionStatus}</p>}
+      </div>
     </div>
   );
 }
 
-const styles: { [key: string]: CSSProperties } = {
-  container: {
-    textAlign: "center",
-    padding: "20px",
-    fontFamily: "Poppins, sans-serif",
-  },
-  inputContainer: {
-    marginBottom: "20px",
-    position: "relative",
-  },
+const styles = {
+  container: { textAlign: "center", padding: "20px", fontFamily: "Poppins, sans-serif" },
+  title: { marginBottom: "20px", color: "#04451c" },
+  inputContainer: { marginBottom: "20px", position: "relative" },
   input: {
     padding: "12px",
     borderRadius: "15px",
@@ -237,11 +259,7 @@ const styles: { [key: string]: CSSProperties } = {
     overflowY: "auto",
     zIndex: 10,
   },
-  suggestionItem: {
-    padding: "10px",
-    cursor: "pointer",
-    borderBottom: "1px solid #ddd",
-  },
+  suggestionItem: { padding: "10px", cursor: "pointer", borderBottom: "1px solid #ddd" },
   button: {
     backgroundColor: "#04451c",
     color: "white",
@@ -252,21 +270,7 @@ const styles: { [key: string]: CSSProperties } = {
     fontSize: "16px",
     transition: "0.3s",
   },
-  error: {
-    color: "red",
-    fontSize: "16px",
-    marginTop: "15px",
-  },
-  warning: {
-    color: "red",
-    fontSize: "16px",
-    marginTop: "15px",
-    fontWeight: "bold",
-  },
-  result: {
-    marginTop: "20px",
-    fontSize: "18px",
-    fontWeight: "bold",
-    color: "#023013",
-  },
+  error: { color: "red", fontSize: "16px", marginTop: "15px" },
+  warning: { color: "red", fontSize: "16px", marginTop: "15px", fontWeight: "bold" },
+  result: { marginTop: "20px", fontSize: "18px", fontWeight: "bold", color: "#023013" },
 };
