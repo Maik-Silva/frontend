@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type CSSProperties } from "react";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -233,7 +233,18 @@ export default function Home() {
   );
 }
 
-const styles = {
+const styles: {
+  container: CSSProperties;
+  title: CSSProperties;
+  inputContainer: CSSProperties;
+  input: CSSProperties;
+  suggestionsList: CSSProperties;
+  suggestionItem: CSSProperties;
+  button: CSSProperties;
+  error: CSSProperties;
+  warning: CSSProperties;
+  result: CSSProperties;
+} = {
   container: { textAlign: "center", padding: "20px", fontFamily: "Poppins, sans-serif" },
   title: { marginBottom: "20px", color: "#04451c" },
   inputContainer: { marginBottom: "20px", position: "relative" },
