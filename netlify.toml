@@ -1,0 +1,4 @@
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; connect-src 'self' https://xn--backend-produo-e77b-7vb7f.up.railway.app; img-src 'self' data: https:;"
