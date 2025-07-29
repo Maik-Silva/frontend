@@ -2,7 +2,8 @@
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 
 // Usa variável de ambiente, e se não achar usa localhost
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend-production-e77b.up.railway.app
+";
 
 export default function Home() {
   const [baseFood, setBaseFood] = useState("");
