@@ -2,8 +2,7 @@
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 
 // URL fixa do backend em produção
-const BASE_URL ="https://backend-production-e77b.up.railway.app
-";
+const BASE_URL ="https://backend-production-e77b.up.railway.app";
 
 export default function Home() {
   const [baseFood, setBaseFood] = useState("");
