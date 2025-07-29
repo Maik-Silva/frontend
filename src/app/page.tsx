@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 
-// URL fixa do backend em produção
-const BASE_URL = "https://backend-produção-e77b.up.railway.app";
+// Usa variável de ambiente, e se não achar usa localhost
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function Home() {
   const [baseFood, setBaseFood] = useState("");
@@ -22,6 +22,7 @@ export default function Home() {
   const baseFoodSelected = useRef(false);
   const substituteFoodSelected = useRef(false);
 
+  // Função genérica para buscar sugestões
   const fetchSuggestions = async (
     query: string,
     setSuggestions: (val: string[]) => void,
@@ -43,6 +44,7 @@ export default function Home() {
     }
   };
 
+  // Efeitos para buscar sugestões enquanto digita
   useEffect(() => {
     fetchSuggestions(baseFood, setBaseSuggestions, baseFoodSelected);
   }, [baseFood]);
@@ -51,6 +53,7 @@ export default function Home() {
     fetchSuggestions(substituteFood, setSubstituteSuggestions, substituteFoodSelected);
   }, [substituteFood]);
 
+  // Selecionar sugestão
   const handleSelectSuggestion = (
     food: string,
     setFood: (v: string) => void,
@@ -62,6 +65,7 @@ export default function Home() {
     foodSelected.current = true;
   };
 
+  // Calcular equivalência
   const calculateEquivalence = async () => {
     if (!baseFood || !baseQuantity || !substituteFood) {
       setError("Preencha todos os campos!");
@@ -72,6 +76,7 @@ export default function Home() {
     setError(null);
     setWarning(null);
     setShowResult(false);
+
     try {
       const response = await fetch(
         `${BASE_URL}/api/equivalencia?baseFood=${encodeURIComponent(
@@ -81,11 +86,13 @@ export default function Home() {
         )}&substituteFood=${encodeURIComponent(substituteFood)}`
       );
       const data = await response.json();
+
       if (data.baseGroup && data.substituteGroup && data.baseGroup !== data.substituteGroup) {
         setWarning(
           `⚠️ Essa troca pode não ser ideal. "${baseFood}" pertence a "${data.baseGroup}" e "${substituteFood}" pertence a "${data.substituteGroup}".`
         );
       }
+
       setEquivalence(
         `${data.baseQuantity}g de ${data.baseFood} equivale a ${data.equivalentQuantity}g de ${data.substituteFood}`
       );
@@ -95,9 +102,11 @@ export default function Home() {
       console.error("Erro ao buscar equivalência:", err);
       setShowResult(false);
     }
+
     setLoading(false);
   };
 
+  // Enviar sugestão de novo alimento
   const enviarSugestao = async () => {
     if (!suggestionInput.trim()) {
       setSuggestionStatus("Digite um alimento para sugerir.");
@@ -109,6 +118,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ alimento: suggestionInput }),
       });
+
       if (res.ok) {
         setSuggestionStatus("✅ Sugestão enviada com sucesso!");
         setSuggestionInput("");
