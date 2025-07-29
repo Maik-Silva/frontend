@@ -37,12 +37,22 @@ button:hover {
   background-color: #f5f5f5;
 }
 
+/* Caixa centralizada */
 .centralizado {
   background: linear-gradient(90deg, rgba(230,230,230,1) 0%, rgba(245,245,245,1) 95%);
   border: 2px solid #999;
-  width: 1000px;
+  border-radius: 25px;
+  box-shadow: 0px 4px 15px rgba(2, 48, 19, 0.6);
   margin: 50px auto;
   padding: 50px;
-  border-radius: 25px; /* Arredondamento */
-  box-shadow: 0px 4px 15px rgba(2, 48, 19, 0.6); /* Sombreamento na cor #023013 */
+  width: 1000px; /* Padrão desktop */
+}
+
+/* Responsividade agressiva para celular */
+@media (max-width: 600px) {
+  .centralizado {
+    width: 200px; /* Bem estreito no celular */
+    padding: 20px;
+    margin: 20px auto;
+  }
 }
