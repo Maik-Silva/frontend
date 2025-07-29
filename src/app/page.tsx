@@ -2,7 +2,9 @@
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 
 // URL fixa do backend em produção
-const BASE_URL ="https://backend-production-e77b.up.railway.app";
+const BASE_URL = "https://backend-production-e77b.up.railway.app";
+// URL da função serverless (Netlify cuida do resto)
+const PROXY_FORM_URL = "/.netlify/functions/proxyForm";
 
 export default function Home() {
   const [baseFood, setBaseFood] = useState("");
@@ -113,7 +115,7 @@ export default function Home() {
       return;
     }
     try {
-      const res = await fetch("/api/proxyForm", {
+      const res = await fetch(PROXY_FORM_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ alimento: suggestionInput }),
