@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+// URL fixa do backend em produção
+const BASE_URL = "https://backend-produção-e77b.up.railway.app";
 
 export default function Home() {
   const [baseFood, setBaseFood] = useState("");
@@ -31,7 +32,6 @@ export default function Home() {
       foodSelected.current = false;
       return;
     }
-
     try {
       const response = await fetch(
         `${BASE_URL}/api/sugestoes?query=${encodeURIComponent(query)}`
@@ -68,12 +68,10 @@ export default function Home() {
       setShowResult(false);
       return;
     }
-
     setLoading(true);
     setError(null);
     setWarning(null);
     setShowResult(false);
-
     try {
       const response = await fetch(
         `${BASE_URL}/api/equivalencia?baseFood=${encodeURIComponent(
@@ -83,13 +81,11 @@ export default function Home() {
         )}&substituteFood=${encodeURIComponent(substituteFood)}`
       );
       const data = await response.json();
-
       if (data.baseGroup && data.substituteGroup && data.baseGroup !== data.substituteGroup) {
         setWarning(
           `⚠️ Essa troca pode não ser ideal. "${baseFood}" pertence a "${data.baseGroup}" e "${substituteFood}" pertence a "${data.substituteGroup}".`
         );
       }
-
       setEquivalence(
         `${data.baseQuantity}g de ${data.baseFood} equivale a ${data.equivalentQuantity}g de ${data.substituteFood}`
       );
@@ -99,7 +95,6 @@ export default function Home() {
       console.error("Erro ao buscar equivalência:", err);
       setShowResult(false);
     }
-
     setLoading(false);
   };
 
@@ -108,17 +103,12 @@ export default function Home() {
       setSuggestionStatus("Digite um alimento para sugerir.");
       return;
     }
-
-    const url = `${BASE_URL}/api/sugestao`;
-    console.log("### URL usada para sugestão:", url);
-
     try {
-      const res = await fetch(url, {
+      const res = await fetch("/api/proxyForm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ alimento: suggestionInput }),
       });
-
       if (res.ok) {
         setSuggestionStatus("✅ Sugestão enviada com sucesso!");
         setSuggestionInput("");
@@ -233,18 +223,7 @@ export default function Home() {
   );
 }
 
-const styles: {
-  container: CSSProperties;
-  title: CSSProperties;
-  inputContainer: CSSProperties;
-  input: CSSProperties;
-  suggestionsList: CSSProperties;
-  suggestionItem: CSSProperties;
-  button: CSSProperties;
-  error: CSSProperties;
-  warning: CSSProperties;
-  result: CSSProperties;
-} = {
+const styles: { [key: string]: CSSProperties } = {
   container: { textAlign: "center", padding: "20px", fontFamily: "Poppins, sans-serif" },
   title: { marginBottom: "20px", color: "#04451c" },
   inputContainer: { marginBottom: "20px", position: "relative" },
