@@ -1,4 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
 [[headers]]
   for = "/*"
   [headers.values]
+    # Política CSP básica permitindo conexões para seu backend Railway
     Content-Security-Policy = "default-src 'self'; connect-src 'self' https://xn--backend-produo-e77b-7vb7f.up.railway.app; img-src 'self' data: https:;"
