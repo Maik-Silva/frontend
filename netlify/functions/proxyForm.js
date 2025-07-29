@@ -1,19 +1,19 @@
-// pages/api/proxyForm.ts
-import type { NextApiRequest, NextApiResponse } from "next";
+// netlify/functions/proxyForm.js
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Método não permitido" });
+export async function handler(event, context) {
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: "Método não permitido" }),
+    };
   }
 
   try {
-    const { alimento } = req.body;
+    const { alimento } = JSON.parse(event.body);
 
-    // URL do formulário do Google Forms
     const formUrl =
       "https://docs.google.com/forms/d/e/1FAIpQLSfDi33Amzo6L_j7X_YCSuEhZJxZohNazm3e7rDYX23Mm7kLnA/formResponse";
 
-    // Campo do formulário (ajuste se necessário)
     const formData = new URLSearchParams();
     formData.append("entry.1297131437", alimento);
 
@@ -26,12 +26,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     if (!response.ok) {
-      return res.status(500).json({ error: "Erro ao enviar para Google Forms" });
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: "Erro ao enviar para Google Forms" }),
+      };
     }
 
-    return res.status(200).json({ message: "Sugestão enviada com sucesso" });
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: "Sugestão enviada com sucesso" }),
+    };
   } catch (error) {
     console.error("Erro ao enviar sugestão:", error);
-    return res.status(500).json({ error: "Erro interno do servidor" });
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Erro interno do servidor" }),
+    };
   }
 }
