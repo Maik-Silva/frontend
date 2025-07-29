@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 
-// Usa variável de ambiente, e se não achar usa localhost
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL="https://backend-production-e77b.up.railway.app
+// URL fixa do backend em produção
+const BASE_URL ="https://backend-production-e77b.up.railway.app
 ";
 
 export default function Home() {
