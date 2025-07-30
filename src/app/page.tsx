@@ -218,10 +218,10 @@ export default function Home() {
       <hr style={{ margin: "30px 0" }} />
 
       <div>
-        <h2 style={styles.title}>Sugerir novo alimento</h2>
+        <h2 style={styles.title}>Faltou algum alimento? Deixe sua sugestão:</h2>
         <input
           type="text"
-          placeholder="Digite sua sugestão"
+          placeholder="Digite o alimento que deseja sugerir"
           value={suggestionInput}
           onChange={(e) => setSuggestionInput(e.target.value)}
           style={styles.input}
